@@ -19,15 +19,9 @@ print(len(CINCdat)) # should be n=198774
 
 ## Forward-fill missing values up to 5 sections
 
-
-CINCdat.update(CINCdat.groupby('patient').ffill(limit = 7))
-
-## Backward-fill missing values up to 5 sections
-CINCdat.update(CINCdat.groupby('patient').bfill(limit=3))
-
-## delete any rows with any remaining missing values
-##CINCdat.dropna(subset = ['FiO2','pH','PaCO2','BUN','Calcium','Creatinine','Glucose','Magnesium','Potassium','Hct','Hgb','WBC','Platelets'])
-CINCdat.fillna(-1)
+CINCdat.groupby('patient').apply(lambda group: group.interpolate(method = 'linear'))
+##CINCdat.update(CINCdat.groupby('patient').ffill())
+# general statement; want to forward fill; then when we encounter a different value, we want to backfill such that i -> i+j elements each have a value equal to (v(j)-v(i) / j-i) + i
 
 ## add a filter for multiorgan failure; 
 
