@@ -1,0 +1,60 @@
+#!/bin/bash
+date=2021-11-15
+matlab="/Applications/MATLAB_R2018b.app/bin/matlab"
+
+# Evaluation piece
+folder=$1
+if [ ! -d "$folder" ]; then
+  echo "You need to specify the path to the folder with your files!"
+  exit 2
+fi
+here=`pwd`
+cd $folder
+tmp_train=`mktemp -d $here/train.XXXXXX`
+tmp_test=`mktemp -d $here/testing.XXXXXX`
+tmp_eval=`mktemp -d $here/evaluation.XXXXXX`
+if [ -f get_sepsis_score.R ]; then
+  cp $here/../r_example/driver.R .
+  time Rscript driver.R $here/../training_$date/ $tmp_train/ > ERRORS 2>&1
+  time Rscript driver.R $here/../testing_$date/ $tmp_test/ >> ERRORS 2>&1
+  if [ -d $here/../evaluation_$date ]; then
+    time Rscript driver.R $here/../evaluation_$date/ $tmp_eval/ >> ERRORS 2>&1
+  fi
+elif [ -f get_sepsis_score.py ]; then
+  cp $here/../python_logreg/driver.py .
+  time python3 driver.py $here/../training_$date/ $tmp_train/ > ERRORS 2>&1
+  time python3 driver.py $here/../testing_$date/ $tmp_test/ >> ERRORS 2>&1
+  if [ -d $here/../evaluation_$date ]; then
+    time python3 driver.py $here/../evaluation_$date/ $tmp_eval/ >> ERRORS 2>&1
+  fi
+elif [ -f get_sepsis_score.m ]; then
+  cp $here/../matlab_example/driver.m .
+  time $matlab -nojvm -nodisplay -nosplash -nodesktop -r "try driver(\"$here/../training_$date/\",\"$tmp_train\"); catch; end; quit" > ERRORS 2>&1
+  time $matlab -nojvm -nodisplay -nosplash -nodesktop -r "try driver(\"$here/../testing_$date/\",\"$tmp_test/\"); catch; end; quit" >> ERRORS 2>&1
+  if [ -d $here/../evaluation_$date ]; then
+    time $matlab -nojvm -nodisplay -nosplash -nodesktop -r "try driver(\"$here/../evaluation_$date/\",\"$tmp_eval/\"); catch; end; quit" >> ERRORS 2>&1
+  fi
+
+else
+  echo "No supported code found!"
+fi
+#zip train.zip -j -r $tmp_train/
+#zip test.zip -j -r $tmp_test/
+#zip eval.zip -j -r $tmp_eval/
+
+# Scoring piece
+python $here/evaluate_sepsis_score.py $here/../training_$date/ $tmp_train/ > PERFORMANCE_TRAINING 2>&1
+cat PERFORMANCE_TRAINING
+python $here/evaluate_sepsis_score.py $here/../testing_$date/ $tmp_test/ > PERFORMANCE_TESTING 2>&1
+cat PERFORMANCE_TESTING
+if [ -d $here/../evaluation_$date ]; then
+  python $here/evaluate_sepsis_score.py $here/../evaluation_$date/ $tmp_eval/ > PERFORMANCE_EVALUATION 2>&1
+  cat PERFORMANCE_EVALUATION
+fi
+zip $here/`basename $folder`.zip ERRORS PERFORMANCE_TRAINING PERFORMANCE_TESTING PERFORMANCE_EVALUATION get_sepsis_score.*
+cd $here
+
+# Cleanup
+rm -r $tmp_train/
+rm -r $tmp_test/
+rm -r $tmp_eval/

@@ -1,0 +1,9 @@
+ICULOS,HR,O2Sat,Temp,SBP,MAP,DBP,Resp,FiO2,pH,PaCO2,BUN,Calcium,Creatinine,Glucose,Magnesium,Potassium,Hct,Hgb,WBC,Platelets,Age,Sex,SepsisLabel
+1,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,0
+2,66,98,NaN,135,94,81,20,NaN,NaN,NaN,44,9.8,4.66,104,NaN,4.4,40.1,14,10.1,146,69,1,0
+3,72,97,NaN,145,94,77,18,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,0
+4,73,98,36.8,152,93,77,18,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,1
+5,67,97,NaN,NaN,NaN,NaN,20,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,1
+6,66,97,NaN,134,92,79,18,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,1
+7,66,98,NaN,145,101,87,21,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,1
+8,64,96,NaN,140,93,78,17,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,69,1,1
