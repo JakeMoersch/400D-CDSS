@@ -2,8 +2,13 @@
 
 import numpy as np
 import lightgbm as lgb
+import pandas as pd
+from pandas.core.frame import DataFrame
 
 def get_sepsis_score(data, model):
+
+    df = pd.DataFrame(data, columns = ['patient','ICULOS','HR','O2Sat','Temp','SBP','MAP','DBP','Resp','FiO2','pH','PaCO2','BUN','Calcium','Creatinine','Magnesium','Potassium','Hct','Hgb','WBC','Platelets','Age','Sex'])
+    
     x_mean = np.array([
 23.37, 84.97, 97.09, 36.86, 122.66, 81.97, 63.35, 
 18.86, 0.49, 7.38, 41.16, 22.92, 7.79, 1.54, 131.05, 2.04, 4.13, 
@@ -13,14 +18,22 @@ def get_sepsis_score(data, model):
 0.71, 23.28, 16.33, 14.05, 5.09, 0.33, 0.06, 8.78, 17.89, 2.12, 
 1.91, 46.41, 0.35, 0.59, 5.56, 1.95, 7.55, 101.61, 15.91,1])
 
-    x = data[-1, 0:23]
+    if df.shape[0] > 1 :
+        df.update(df.groupby('patient').ffill(limit = 7))
+
+        ## Backward-fill missing values up to 5 sections
+        df.update(df.groupby('patient').bfill(limit=3))
+        df.fillna(-1)
+    
+    data2 = df.to_numpy()
+    x = data2[-1, 0:23]
     x_norm = np.nan_to_num((x - x_mean) / x_std)
     x_norm = np.array(x_norm)
     x_norm = x_norm.reshape(-1,23)
-#    x_norm = x_norm.astype(np.float64)
+  #  x_norm = x_norm.astype(np.float64)
     score=model.predict(x_norm)
     score=min(max(score,0),1)
-    label = score > 0.026
+    label = score > 0.0286
 
     return score, label
 
