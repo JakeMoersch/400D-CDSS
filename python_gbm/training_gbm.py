@@ -45,7 +45,7 @@ CINCdat['addSBPDBP'] = CINCdat['SBP'] * CINCdat['DBP']
 ## Get reference ranges for variables using only non-sepsis patients as 'normal'
 CINCdat_NOsepsis = CINCdat[~CINCdat.patient.isin(np.unique(CINCdat.patient[CINCdat.SepsisLabel==1]))]
 CINCdat_NOsepsis = CINCdat_NOsepsis[CINCdat_NOsepsis.ICULOS>1]
-CINCdat_NOsepsis.drop(['patient','SepsisLabel','Sex'],axis=1,inplace=True)
+CINCdat_NOsepsis.drop(['patient','SepsisLabel'],axis=1,inplace=True)
 meanCINCdat = round(CINCdat_NOsepsis.mean(axis=0),2)
 sdCINCdat = round(CINCdat_NOsepsis.std(axis=0),2)
 print('meanCINCdat',np.array(meanCINCdat))
