@@ -26,20 +26,20 @@ CINCdat = CINCdat.interpolate(method = 'linear')
 
 #CINCdat = CINCdat.clip(clipvalsSer,axis=1) #replace negative data with 0
 
-CINCdat['multiplyHRSBP'] = CINCdat['SBP'] * CINCdat['HR']
-CINCdat['multiplyHRDBP'] = CINCdat['DBP'] * CINCdat['HR']
-CINCdat['multiplyO2SatSBP'] = CINCdat['SBP'] * CINCdat['O2Sat']
-CINCdat['multiplyMAPSBP'] = CINCdat['SBP'] * CINCdat['MAP']
-CINCdat['multiplyHRSBP'] = CINCdat['SBP'] * CINCdat['HR']
-CINCdat['multiplyAgeICULOS'] = CINCdat['Age'] * CINCdat['ICULOS']
-CINCdat['multiplySBPDBP'] = CINCdat['SBP'] * CINCdat['DBP']
-CINCdat['multiplyHRO2Sat'] = CINCdat['HR'] * CINCdat['O2Sat']
-CINCdat['multiplyAgeO2'] = CINCdat['Age'] * CINCdat['O2Sat']
-CINCdat['multiplyAgeSex'] = CINCdat['Age'] * CINCdat['Sex']
-CINCdat['multiplyRespHR'] = CINCdat['Resp'] * CINCdat['HR']
+CINCdat['multiplyHRSBP'] = CINCdat['SBP'] + CINCdat['HR']
+CINCdat['multiplyHRDBP'] = CINCdat['DBP'] + CINCdat['HR']
+CINCdat['multiplyO2SatSBP'] = CINCdat['SBP'] + CINCdat['O2Sat']
+CINCdat['multiplyMAPSBP'] = CINCdat['SBP'] + CINCdat['MAP']
+CINCdat['multiplyHRSBP'] = CINCdat['SBP'] + CINCdat['HR']
+CINCdat['comboSBPPaCO2'] = CINCdat['SBP'] + CINCdat['PaCO2']
+CINCdat['comboSBPBUN'] = CINCdat['SBP'] + CINCdat['BUN']
+CINCdat['multiplyHRO2Sat'] = CINCdat['HR'] + CINCdat['O2Sat']
+CINCdat['multiplyAgeO2'] = CINCdat['Age'] + CINCdat['O2Sat']
+CINCdat['ComboSBPWBC'] = CINCdat['SBP'] + CINCdat['WBC']
+CINCdat['multiplyRespHR'] = CINCdat['Resp'] + CINCdat['HR']
 CINCdat['addHRSBP'] = CINCdat['HR'] + CINCdat['SBP']
-CINCdat['addHRResp'] = CINCdat['HR'] * CINCdat['Resp']
-CINCdat['addSBPDBP'] = CINCdat['SBP'] * CINCdat['DBP']
+CINCdat['addHRResp'] = CINCdat['HR'] + CINCdat['Resp']
+CINCdat['addSBPDBP'] = CINCdat['SBP'] + CINCdat['DBP']
 
 
 ## Get reference ranges for variables using only non-sepsis patients as 'normal'
@@ -58,7 +58,7 @@ for c in cols:
   CINCdat_zScores[c] = (CINCdat_zScores[c]-meanCINCdat[c])/sdCINCdat[c]
 
 ## Replace values still missing with the mean
-CINCdat_zScores = CINCdat_zScores.fillna(0)
+CINCdat_zScores = CINCdat_zScores.fillna(1)
 CINCdat_zScores.drop(['patient'],axis=1,inplace=True)
 CINCdat_zScoresClone = CINCdat_zScores.copy()
 CINCdat_zScores.drop(['SepsisLabel'],axis=1,inplace=True)
@@ -69,7 +69,7 @@ CINCdat_zScores.drop(['SepsisLabel'],axis=1,inplace=True)
 import lightgbm as lgb
 #train_data = lgb.Dataset(data=CINCdat_zScores.iloc[:,0:23], label=CINCdat_zScoresClone.SepsisLabel)
 train_data = lgb.Dataset(data=CINCdat_zScores.iloc[:,0:(23+14+1)], label=CINCdat_zScoresClone.SepsisLabel)
-param = {'objective': 'binary'}
+param = {'objective': 'regression', 'force_col_wise':'true'}
 #print(CINCdat_zScores.iloc[:,0:(23)])
 #print(CINCdat_zScores.iloc[:,0:(23+1)])
 #print(CINCdat_zScores.iloc[:,0:(23+2)])
