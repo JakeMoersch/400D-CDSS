@@ -28,7 +28,8 @@ def get_sepsis_score(data, model):
 
 
 
-
+    #df.fillna(method = 'bfill', axis = 1, limit = 5)
+    #df.fillna(method = 'ffill', axis = 1)
 
     df.interpolate(method = 'linear')
 
@@ -65,7 +66,7 @@ def get_sepsis_score(data, model):
     #x_norm = x_norm.reshape(-1,)
     score=model.predict(x_norm)
     score=min(max(score,0),1)
-    label = score > 0.04
+    label = score > 0.1
 
     return score, label
 

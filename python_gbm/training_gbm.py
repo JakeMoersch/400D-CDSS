@@ -2,7 +2,6 @@
 import os, glob
 import numpy as np
 import pandas as pd
-from pandas import Series
 
 ## Load all the data so we can quickly combine it and explore it. 
 pfile = 'CinC.pickle'
@@ -18,7 +17,8 @@ else:
 
 print(len(CINCdat)) # should be n=198774
 
-
+#CINCdat.update(CINCdat.groupby('patient').fillna(method = 'bfill', axis = 1, limit = 5))
+#CINCdat.update(CINCdat.groupby('patient').fillna(method = 'ffill', axis = 1))
 CINCdat = CINCdat.groupby('patient').apply(lambda column: column.interpolate(method = 'linear'))
 CINCdat = CINCdat.interpolate(method = 'linear')
 #clipvals = np.linspace(0,0,38)
@@ -69,7 +69,7 @@ CINCdat_zScores.drop(['SepsisLabel'],axis=1,inplace=True)
 import lightgbm as lgb
 #train_data = lgb.Dataset(data=CINCdat_zScores.iloc[:,0:23], label=CINCdat_zScoresClone.SepsisLabel)
 train_data = lgb.Dataset(data=CINCdat_zScores.iloc[:,0:(23+14+1)], label=CINCdat_zScoresClone.SepsisLabel)
-param = {'objective': 'regression', 'force_col_wise':'true'}
+param = {'objective': 'binary', 'force_col_wise':'true'}
 #print(CINCdat_zScores.iloc[:,0:(23)])
 #print(CINCdat_zScores.iloc[:,0:(23+1)])
 #print(CINCdat_zScores.iloc[:,0:(23+2)])
